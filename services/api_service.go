@@ -32,15 +32,13 @@ func (s *QueueService) GetQueue() ([]models.QueueItem, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	// Cache the result
-	queueBytes, _ := json.Marshal(queue)
-	database.RedisClient.Set(context.Background(), "queue", queueBytes, 0)
-
+	if queue == nil {
+		queue = []models.QueueItem{}
+	}
 	return queue, nil
 }
 
-func (s *QueueService) AddToQueue(name, email, value string) (models.QueueItem, error) {
+func (s *QueueService) AddToQueue(name, email string) (models.QueueItem, error) {
 	item := models.QueueItem{
 		Name:  name,
 		Email: email,

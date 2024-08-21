@@ -1,4 +1,4 @@
-package handlers
+package handler
 
 import (
 	"encoding/json"
@@ -35,14 +35,13 @@ func (h *QueueHandler) AddToQueue(w http.ResponseWriter, r *http.Request) {
 	var requestData struct {
 		Name  string `json:"name"`
 		Email string `json:"email"`
-		Value string `json:"value"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	item, err := h.Service.AddToQueue(requestData.Name, requestData.Email, requestData.Value)
+	item, err := h.Service.AddToQueue(requestData.Name, requestData.Email)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

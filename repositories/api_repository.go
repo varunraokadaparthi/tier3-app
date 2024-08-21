@@ -3,7 +3,6 @@ package repositories
 import (
 	"context"
 	"encoding/json"
-
 	"github.com/go-redis/redis/v8"
 	"tier3-app/models"
 )
@@ -42,6 +41,16 @@ func (r *QueueRepository) Add(item models.QueueItem) (models.QueueItem, error) {
 	if err != nil {
 		return models.QueueItem{}, err
 	}
+
+	//// Check the type of the key before using it
+	//keyType, err := r.redisClient.Type(ctx, "queue").Result()
+	//if err != nil {
+	//	return models.QueueItem{}, err
+	//}
+	//log.Printf("Type of 'queue' key: %s", keyType)
+	//if keyType != "none" && keyType != "list" {
+	//	return models.QueueItem{}, fmt.Errorf("key 'queue' is of type %s, expected list", keyType)
+	//}
 
 	if err := r.redisClient.RPush(ctx, "queue", itemBytes).Err(); err != nil {
 		return models.QueueItem{}, err

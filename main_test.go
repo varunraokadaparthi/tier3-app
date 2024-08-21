@@ -11,7 +11,7 @@ import (
 
 	"tier3-app/config"
 	"tier3-app/database"
-	"tier3-app/handlers"
+	"tier3-app/handler"
 	"tier3-app/models"
 	"tier3-app/repositories"
 	"tier3-app/services"
@@ -36,7 +36,7 @@ func TestGetQueue(t *testing.T) {
 	// Set up repositories, services, and handlers
 	queueRepo := repositories.NewQueueRepository(database.RedisClient)
 	queueService := services.NewQueueService(queueRepo)
-	queueHandler := handlers.NewQueueHandler(queueService)
+	queueHandler := handler.NewQueueHandler(queueService)
 
 	req, err := http.NewRequest("GET", "/api/v1/queue", nil)
 	if err != nil {
@@ -70,11 +70,11 @@ func TestAddToQueue(t *testing.T) {
 	// Set up repositories, services, and handlers
 	queueRepo := repositories.NewQueueRepository(database.RedisClient)
 	queueService := services.NewQueueService(queueRepo)
-	queueHandler := handlers.NewQueueHandler(queueService)
+	queueHandler := handler.NewQueueHandler(queueService)
 
 	newItem := models.QueueItem{Name: "John Doe", Email: "john.doe@example.com"}
 	jsonItem, _ := json.Marshal(newItem)
-	req, err := http.NewRequest("POST", "/api/v1/queue", bytes.NewBuffer(jsonItem))
+	req, err := http.NewRequest("POST", "/api/v1/adduser", bytes.NewBuffer(jsonItem))
 	if err != nil {
 		t.Fatal(err)
 	}
