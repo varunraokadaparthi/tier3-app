@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: queue-app
+  labels:
+    app: queue-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: queue-app
+  template:
+    metadata:
+      labels:
+        app: queue-app
+    spec:
+      containers:
+        - name: queue-app
+          image: quay.io/vkadapar_openshift/queue:v1.0
+          command: ["/app/queue"]
+          ports:
+            - containerPort: 8080
+          env:
+            - name: REDIS_ADDR
+              value: "localhost:6379" # Since Redis is in the same pod
+            - name: REDIS_PASS
+              value: ""
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 10
+
+        - name: redis
+          image: redis:latest
+          ports:
+            - containerPort: 6379
+          livenessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      imagePullSecrets:
+      - name: vkadapar-openshift-pull-secret
